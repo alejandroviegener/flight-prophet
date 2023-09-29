@@ -43,3 +43,7 @@ api-test:			## Run tests and coverage
 .PHONY: build
 build:			## Build locally the python artifact
 	python setup.py bdist_wheel
+
+.PHONY: api-run
+api-run:			
+	uvicorn challenge.api:app --host "0.0.0.0"

@@ -3,4 +3,4 @@ version: '3'
 services:
   flight-prophet:
     ports:
-      - "8080:80"
+      - "8000:8000"
