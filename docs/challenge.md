@@ -20,6 +20,8 @@ Model
 - Fixed test in model. Prediction was missing in one of the tests
 - Fixed type hint in model class predict method
 - Changed data path to absolute in tests
+- added static method to compute delay target
+- added Classifier abstraction and extracted that from the DelayModel class
 
 TODOS:
 - abstract model into Classifier class

@@ -1,9 +1,10 @@
 import pandas as pd
 
 from typing import Tuple, Union, List
-from sklearn.linear_model import LogisticRegression
 from datetime import datetime
 import numpy as np
+
+from .classifier import LogisticRegressionClassifier
 
 
 FEATURES = [
@@ -24,7 +25,7 @@ class DelayModel:
     def __init__(
         self
     ):
-        self._model = LogisticRegression() # Model should be saved in this attribute.
+        self._model = LogisticRegressionClassifier() # Model should be saved in this attribute.
 
     def preprocess(
         self,
@@ -90,12 +91,6 @@ class DelayModel:
             target (pd.DataFrame): target.
         """
 
-        # Compute class weights and set model parameter accordingly
-        label_0_len = len(target[target['delay'] == 0])
-        label_1_len = len(target[target['delay'] == 1])
-
-        # Fit model
-        self._model.set_params(class_weight={1: label_0_len/len(target), 0: label_1_len/len(target)})
         self._model.fit(features, target)
         return
 
@@ -114,6 +109,6 @@ class DelayModel:
         """
 
         # Predict
-        predictions = self._model.predict(features)
-        return predictions.tolist()
+        return self._model.predict(features)
     
+
