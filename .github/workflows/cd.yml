@@ -35,3 +35,6 @@ jobs:
         file: ./Dockerfile.prod
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/latam-mle-challenge:${{ github.ref_name }}
+
+# to pull the image
+# docker pull ${{ secrets.DOCKERHUB_USERNAME }}/latam-mle-challenge:${{ github.ref_name }}
