@@ -5,7 +5,7 @@ from typing import List, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from .classifier import LogisticRegressionClassifier
+from .classifier import LogisticRegressionClassifier, XGBoostClassifier
 
 REQUIRED_FEATURE_DATA = ["OPERA", "TIPOVUELO", "MES"]
 REQUIRED_TARGET_DATA = ["Fecha-O", "Fecha-I"]
@@ -56,9 +56,8 @@ FEATURES = [
 
 class DelayModel:
     def __init__(self):
-        self._model = (
-            LogisticRegressionClassifier()
-        )  # Model should be saved in this attribute.
+        # XGBoostClassifier() or LogisticRegressionClassifier()
+        self._model = LogisticRegressionClassifier()
 
     def preprocess(
         self, data: pd.DataFrame, target_column: str = None
