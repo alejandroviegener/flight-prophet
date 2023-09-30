@@ -26,3 +26,5 @@ CMD ["uvicorn", "challenge.api:app", "--host", "0.0.0", "--port", "8000"]
 # to build and run the image:
 # docker build -t challenge:prod -f Dockerfile.prod .
 # docker run -d --name challenge -p 8000:8000 challenge:prod
+# to connect to instace 
+# ssh -i "latam-mle-challenge-key.pem" ec2-user@ec2-3-15-153-241.us-east-2.compute.amazonaws.com
