@@ -16,6 +16,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    # Check code formatting using black
+    - name: Check code formatting with black
+      run: black --check .
+
+    # Check imports ordering using isort
+    - name: Check imports ordering with isort
+      run: isort --profile black --check-only .
+
     # Step to create a symbolic link
     - name: Create symbolic link
       run: ln -s docker-compose.test.yml docker-compose.override.yml
