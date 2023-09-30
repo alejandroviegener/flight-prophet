@@ -27,9 +27,9 @@ jobs:
 
     # Execute the model-test command
     - name: Execute model-test command
-      run: docker-compose run -T flight-phrophet model-test
+      run: docker-compose run -T flight-prophet model-test
       # '-T' disables pseudo-tty allocation
 
     # Execute the api-test command
     - name: Execute api-test command
-      run: docker-compose run -T flight-phrophet api-test
+      run: docker-compose run -T flight-prophet api-test
