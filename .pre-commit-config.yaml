@@ -16,5 +16,3 @@ repos:
     hooks:
     - id: black
       args: ['--check']
-
-
