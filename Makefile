@@ -40,6 +40,11 @@ api-test:			## Run tests and coverage
 	mkdir reports || true
 	pytest --cov-config=.coveragerc --cov-report term --cov-report html:reports/html --cov-report xml:reports/coverage.xml --junitxml=reports/junit.xml --cov=challenge tests/api
 
+.PHONY: code-quality-check
+code-quality-check:			## execute code quality checks
+	black --check .
+	isort --profile black --check-only .
+
 .PHONY: build
 build:			## Build locally the python artifact
 	python setup.py bdist_wheel
