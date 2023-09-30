@@ -2,7 +2,8 @@
 Train and serialize a DelayModel
 """
 
-import pickle 
+import pickle
+
 import pandas as pd
 
 from challenge.model import DelayModel
