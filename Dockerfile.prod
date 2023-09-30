@@ -24,5 +24,6 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 
-CMD ["sh", "-c", "while true; do sleep 86400; done"]
+# CMD ["sh", "-c", "while true; do sleep 86400; done"]
+ENTRYPOINT ["make"]
 

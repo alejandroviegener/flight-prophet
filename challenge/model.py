@@ -3,9 +3,23 @@ import pandas as pd
 from typing import Tuple, Union, List
 from datetime import datetime
 import numpy as np
+import pickle
 
 from .classifier import LogisticRegressionClassifier
 
+REQUIRED_FEATURE_DATA = ['OPERA', 'TIPOVUELO', 'MES']
+REQUIRED_TARGET_DATA = ['Fecha-O', 'Fecha-I']
+
+ALLOWED_OPERATORS = ['Grupo LATAM', 'Sky Airline', 'Aerolineas Argentinas', 'Copa Air',
+       'Latin American Wings', 'Avianca', 'JetSmart SPA', 'Gol Trans',
+       'American Airlines', 'Air Canada', 'Iberia', 'Delta Air', 'Air France',
+       'Aeromexico', 'United Airlines', 'Oceanair Linhas Aereas', 'Alitalia',
+       'K.L.M.', 'British Airways', 'Qantas Airways', 'Lacsa', 'Austral',
+       'Plus Ultra Lineas Aereas']
+
+ALLOWED_FLIGHT_TYPES = ["N", "I"]
+
+ALLOWED_MONTHS = [1,2,3,4,5,6,7,8,9,10,11,12]
 
 FEATURES = [
     "OPERA_Latin American Wings", 
@@ -44,17 +58,34 @@ class DelayModel:
             or
             pd.DataFrame: features.
         """
-
         # Construct target if required
         target = None
         if target_column:
+            if not set(REQUIRED_TARGET_DATA).issubset(set(data.columns)):
+                raise ValueError("Missing columns in data") 
+
             data['min_diff'] = data.apply(self._get_min_diff, axis = 1)
             threshold_in_minutes = 15
             data[target_column] = np.where(data['min_diff'] > threshold_in_minutes, 1, 0)
             target = data[[target_column]]
 
         # Concstruct dummy features
-        data = data[["OPERA", "TIPOVUELO", "MES"]]
+        if not set(REQUIRED_FEATURE_DATA).issubset(set(data.columns)):
+            raise ValueError("Missing columns in data")
+        data = data[REQUIRED_FEATURE_DATA]
+        
+        # Check if only allowed values are present
+        if not set(data["OPERA"]).issubset(set(ALLOWED_OPERATORS)):
+            raise ValueError("Invalid values in OPERA column")
+        if not set(data["TIPOVUELO"]).issubset(set(ALLOWED_FLIGHT_TYPES)):
+            raise ValueError("Invalid values in TIPOVUELO column")
+        if not set(data["MES"]).issubset(set(ALLOWED_MONTHS)):
+            raise ValueError("Invalid values in MES column")    
+        
+        data['OPERA'] = pd.Categorical(data['OPERA'], categories=ALLOWED_OPERATORS)
+        data['TIPOVUELO'] = pd.Categorical(data['TIPOVUELO'], categories=ALLOWED_FLIGHT_TYPES)
+        data['MES'] = pd.Categorical(data['MES'], categories=ALLOWED_MONTHS)
+
         features = pd.concat(   
             [
                 pd.get_dummies(data['OPERA'], prefix = 'OPERA'),
@@ -64,19 +95,12 @@ class DelayModel:
             axis = 1
         )
 
-        # Filter useful features
+        # Filter useful features the model uses
         features = features[FEATURES]
 
         if target_column:   
             return features, target        
         return features
-
-    @staticmethod
-    def _get_min_diff(data):
-        fecha_o = datetime.strptime(data['Fecha-O'], '%Y-%m-%d %H:%M:%S')
-        fecha_i = datetime.strptime(data['Fecha-I'], '%Y-%m-%d %H:%M:%S')
-        min_diff = ((fecha_o - fecha_i).total_seconds())/60
-        return min_diff
 
     def fit(
         self,
@@ -111,4 +135,40 @@ class DelayModel:
         # Predict
         return self._model.predict(features)
     
+    def save(self, file_path) -> None:
+        """
+        Save DelayModel to pickle file.
 
+        Args:
+            file_path (str): file path.
+        """
+        pickle.dump(self, open(file_path, 'wb'))
+        return
+
+    @classmethod
+    def load(cls, model_filepath: str):
+        """
+        Load DelayModel from pickle file.
+
+        Args:
+            model_filepath (str): file path.
+
+        Returns:
+            DelayModel: model.
+        """
+
+        model = None
+        try:
+            model = pickle.load(open(model_filepath, 'rb'))
+            print(f"Model loaded from {model_filepath}")
+        except:
+            print(f"Error loading model from {model_filepath}")
+            model = cls()
+        return model
+
+    @staticmethod
+    def _get_min_diff(data):
+        fecha_o = datetime.strptime(data['Fecha-O'], '%Y-%m-%d %H:%M:%S')
+        fecha_i = datetime.strptime(data['Fecha-I'], '%Y-%m-%d %H:%M:%S')
+        min_diff = ((fecha_o - fecha_i).total_seconds())/60
+        return min_diff
