@@ -1,7 +1,6 @@
 
 Initial scaffolding
 
-
 Docker
 
 Makefile

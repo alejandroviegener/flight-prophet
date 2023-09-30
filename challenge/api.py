@@ -1,46 +1,45 @@
-import fastapi
-from pydantic import BaseModel
 from typing import List
+
+import fastapi
 import pandas as pd
+from pydantic import BaseModel
 
 from challenge import model
 
+
 class Flight(BaseModel):
-    OPERA: str 
+    OPERA: str
     TIPOVUELO: str
     MES: int
+
 
 class PredictionRequest(BaseModel):
     flights: List[Flight]
 
+
 class PredictionResponse(BaseModel):
     predict: List[int]
 
-def create_app(model_filepath: str) -> fastapi.FastAPI:
 
+def create_app(model_filepath: str) -> fastapi.FastAPI:
     # Load serialized model and create FastAPI app
     delay_model = model.DelayModel.load(model_filepath)
     app = fastapi.FastAPI()
-        
+
     # Define API endpoints
     @app.get("/health", status_code=200)
     async def get_health() -> dict:
-        return {
-            "status": "OK"
-        }
+        return {"status": "OK"}
 
-    @app.post("/predict", status_code=200) 
+    @app.post("/predict", status_code=200)
     async def post_predict(prediction_request: PredictionRequest) -> PredictionResponse:
-
         # Get request body
         flight_operators = [flight.OPERA for flight in prediction_request.flights]
         flight_month = [flight.MES for flight in prediction_request.flights]
         flight_type = [flight.TIPOVUELO for flight in prediction_request.flights]
-        features = pd.DataFrame({
-            "OPERA": flight_operators,
-            "TIPOVUELO": flight_type,
-            "MES": flight_month
-        })
+        features = pd.DataFrame(
+            {"OPERA": flight_operators, "TIPOVUELO": flight_type, "MES": flight_month}
+        )
 
         # Preprocess data, raise exception if invalid
         try:
@@ -48,10 +47,10 @@ def create_app(model_filepath: str) -> fastapi.FastAPI:
         except ValueError as e:
             print(str(e))
             raise fastapi.HTTPException(status_code=400, detail=str(e))
-        
+
         predictions = delay_model.predict(features)
-        return PredictionResponse(predict=predictions)  
-    
+        return PredictionResponse(predict=predictions)
+
     return app
 
 
