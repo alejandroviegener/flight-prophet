@@ -174,11 +174,11 @@ class DelayModel:
         """
         # Check if only allowed values are present
         if not set(data["OPERA"]).issubset(set(ALLOWED_OPERATORS)):
-            raise ValueError("Invalid values in OPERA column")
+            raise ValueError("Invalid values in OPERA")
         if not set(data["TIPOVUELO"]).issubset(set(ALLOWED_FLIGHT_TYPES)):
-            raise ValueError("Invalid values in TIPOVUELO column")
+            raise ValueError("Invalid values in TIPOVUELO")
         if not set(data["MES"]).issubset(set(ALLOWED_MONTHS)):
-            raise ValueError("Invalid values in MES column")
+            raise ValueError("Invalid values in MES")
 
     @staticmethod
     def _get_target(
