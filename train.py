@@ -28,6 +28,12 @@ def train_and_save_model(source_file: str, output_file: str):
 
 
 if __name__ == "__main__":
+    """
+    Train and serialize a DelayModel
+    To run type:
+        python train.py <source_file> <output_file>
+    """
+
     parser = argparse.ArgumentParser(
         description="Train a model using data from source file and save the trained model to an output file."
     )
