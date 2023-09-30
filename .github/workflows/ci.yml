@@ -25,10 +25,13 @@ jobs:
       run: |
         docker-compose build
 
+    # Execute code quality checks
+    - name: Execute code quality checks
+      run: docker-compose run -T flight-prophet code-quality-check
+
     # Execute the model-test command
     - name: Execute model-test command
       run: docker-compose run -T flight-prophet model-test
-      # '-T' disables pseudo-tty allocation
 
     # Execute the api-test command
     - name: Execute api-test command
